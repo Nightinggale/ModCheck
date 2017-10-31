@@ -62,6 +62,8 @@ Tag: yourModFirst (default false)
 
 Will change the result to pass if your mod is loaded first.
 
+Note: if the mod in question is not loaded, this check will return true and will not give any error. The reason is that it should work with the case where the requirements is "if you use both mods, this is the order, but you can use either as a standalone". If you want both order and require the mod to be loaded, then use both isModLoaded and loadOrder.
+
 ### isVersion
 Will pass if version of modName is the same or newer than version.
 
