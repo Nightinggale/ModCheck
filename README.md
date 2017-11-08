@@ -30,7 +30,19 @@ Adding the bool errorOnFail to the mentioned tests, the following conditions can
 - mod version too old
 
 ## How to install
-Download the DLL file and put it in Assemblies in your mod. You may have to create this folder and it doesn't matter if you already have dll files in it or not. Unlike standalone mods, this approach ensures that the added features are always available to your mod.
+There are two ways to use ModCheck. Which option you choose is entirely up to you.
+
+### Included in mod
+Download the DLL file and put it in Assemblies in your mod.
+
+- Pro: will always work, even if the user lack ModCheck
+- Con: you need to update the DLL in your mod if ModCheck updates and the change affects your mod
+
+### Use ModCheck mod
+Load ModCheck as a mod and then make use of it in your mod.
+
+- Pro: Users (steam) will be in charge of updating ModCheck
+- Con: you mod will fail if the user fails to load ModCheck and without ModCheck you can't print a nice error message
 
 # Usage guide
 ### Default tags for all checks
