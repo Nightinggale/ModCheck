@@ -1,9 +1,9 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <ModMetaData>
-	<name>ModCheck[develop]</name>
+	<name>ModCheck[A17]</name>
 	<author>Nightinggale</author>
 	<url>https://ludeon.com/forums/index.php?topic=36534.0</url>
-	<targetVersion>0.18.0</targetVersion>
+	<targetVersion>0.17.1</targetVersion>
 	<description>Adds the ability to create errors if required mods aren't loaded or incompatible mods are loaded as well as adding patch conditions related to other mods.
 	
 For players:
