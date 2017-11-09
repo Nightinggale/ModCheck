@@ -3,10 +3,13 @@
 	<name>ModCheck[develop]</name>
 	<author>Nightinggale</author>
 	<url>https://ludeon.com/forums/index.php?topic=36534.0</url>
-	<targetVersion>0.18.1712</targetVersion>
+	<targetVersion>0.18.0</targetVersion>
 	<description>Adds the ability to create errors if required mods aren't loaded or incompatible mods are loaded as well as adding patch conditions related to other mods.
 	
-For players: load this if you use one or more mods, which list this as a dependency. No player usable features included.
+For players:
+Load this before Core
+Technically load order often doesn't matter, but in some cases it's good to have before any mod using ModCheck and nothing bad will happen from loading before Core.
 
-For modders: follow the link for a guide on how to make your mod use the included features.</description>
+For modders:
+Follow the link for a guide on how to make your mod use the included features.</description>
 </ModMetaData>
