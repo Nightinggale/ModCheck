@@ -49,11 +49,11 @@ Load ModCheck as a mod and then make use of it in your mod.
 ***
 modName 
 
-The name of the mod you want to test on
+The name tag in ModMetaData inside the mod you want to test on
 ***
 yourMod 
 
-The name of your mod. Used for error messages and checking mod load order
+The name tag in ModMetaData of your mod. Used for error messages and checking mod load order
 ***
 errorOnFail 
 
