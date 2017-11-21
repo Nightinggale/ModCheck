@@ -14,6 +14,9 @@ namespace ModCheck
         protected string yourMod;
         protected bool errorOnFail = false;
 
+        protected string customMessageSuccess;
+        protected string customMessageFail;
+
         protected bool isModLoaded(string name)
         {
             return ModsConfig.ActiveModsInLoadOrder.Any(m => m.Name == name);
@@ -49,15 +52,37 @@ namespace ModCheck
         {
             string messageStr = null;
 
-            if (!testPassed)
+            if (testPassed)
             {
+                if (!customMessageSuccess.NullOrEmpty())
+                {
+                    messageStr = customMessageSuccess;
+                }
+            }
+            else
+            {
+                if (!customMessageFail.NullOrEmpty())
+                {
+                    messageStr = customMessageFail;
+                }
                 if (errorOnFail)
                 {
                     if (messageStr.NullOrEmpty())
                     {
                         messageStr = getDefaultErrorString();
                     }
+                }
+            }
+
+            if (!messageStr.NullOrEmpty())
+            {
+                if (!testPassed && errorOnFail)
+                {
                     Log.Error(messageStr);
+                }
+                else
+                {
+                    Log.Message(messageStr);
                 }
             }
         }
