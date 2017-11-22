@@ -2,6 +2,7 @@
 using System.Xml;
 using Verse;
 using System;
+using System.Collections.Generic;
 using RimWorld;
 
 namespace ModCheck
@@ -16,6 +17,10 @@ namespace ModCheck
 
         protected string customMessageSuccess;
         protected string customMessageFail;
+
+        protected List<string> altModNames = new List<string>();
+
+
 
         protected bool isModLoaded(string name)
         {
@@ -106,6 +111,9 @@ namespace ModCheck
                 if (modName.NullOrEmpty()) throw new ArgumentException("MissingModName");
                 if (yourMod.NullOrEmpty()) throw new ArgumentException("MissingYourMod");
 
+                // include the modname in the alt names. That way all names will be used if alt names are looped
+                altModNames.Add(modName);
+
                 bool testPassed = isTestPassed();
                 writeLogEntry(testPassed);
                 return testPassed;
@@ -127,7 +135,13 @@ namespace ModCheck
 
         protected override bool isTestPassed()
         {
-            bool modLoaded = isModLoaded(modName);
+            bool modLoaded = false;
+
+            foreach (string loopname in altModNames)
+            {
+                modLoaded = isModLoaded(loopname);
+                if (modLoaded) break;
+            }
 
             return (modLoaded && !incompatible) || (!modLoaded && incompatible);
         }
@@ -148,11 +162,15 @@ namespace ModCheck
 
         protected override bool isTestPassed()
         {
-            if (yourModFirst)
+            foreach (string loopName in altModNames)
             {
-                return isModLoadedBeforeMod(yourMod, modName);
+                bool success = yourModFirst ? isModLoadedBeforeMod(yourMod, loopName) : isModLoadedBeforeMod(loopName, yourMod);
+                if (!success)
+                {
+                    return false;
+                }
             }
-            return isModLoadedBeforeMod(modName, yourMod);
+            return true;
         }
 
         protected override string getDefaultErrorString()
@@ -184,12 +202,19 @@ namespace ModCheck
         protected override bool isTestPassed()
         {
             Version min = getVersion(version, "MinVersionUnreadable");
-            int index = getModLoadIndex(modName);
-            if (index != -1)
+
+            foreach (string loopName in altModNames)
             {
-                string currentStr = ModsConfig.ActiveModsInLoadOrder.ElementAt(index).TargetVersion;
-                Version current = getVersion(currentStr, "CurrentVersionUnreadable");
-                return current.Major >= min.Major && current.Minor >= min.Minor && current.Build >= min.Build;
+                int index = getModLoadIndex(loopName);
+                if (index != -1)
+                {
+                    string currentStr = ModsConfig.ActiveModsInLoadOrder.ElementAt(index).TargetVersion;
+                    Version current = getVersion(currentStr, "CurrentVersionUnreadable");
+                    if (current.Major < min.Major || current.Minor < min.Minor || current.Build < min.Build)
+                    {
+                        return false;
+                    }
+                }
             }
             return true;
         }
