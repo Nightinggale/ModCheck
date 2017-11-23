@@ -59,6 +59,25 @@ errorOnFail
 
 Bool to tell if fails to be written as errors. Default false
 ***
+customMessageSuccess (added in v1.2)
+
+String to write to the log on success (default: nothing)
+***
+customMessageFail (added in v1.2)
+
+String to write to the log on failure. Will be red if errorOnFail is true. Will use default strings if empty and errorOnFail is set.
+***
+altModNames (added in v1.2)
+
+If a mod has multiple names (like exists with both A18 and B18 in the name), then add the additional names in this list. ModCheck adds contents of modName to the list at runtime and modName is used as the name when writing to the log.
+usage:
+
+	<altModNames>
+		<li>nameA</li>
+		<li>nameB</li>
+	</altModNames>
+
+***
 ## Individual keywords for testing
 ### isModLoaded
 Will pass if mod is in the list of loaded mods.

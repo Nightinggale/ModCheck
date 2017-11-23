@@ -1,0 +1,16 @@
+Changelog for ModCheck
+Updating ModCheck will not break existing xml files.
+
+v1.2
+- Added custom message support (like logging: My mod detected modX and will patch itself accordingly)
+- Added ability to detect another mod by more than one name (like name v1.3 and name v1.4)
+- Major code redesign to greatly reduce the risk of bugs when adding new features
+
+Note: stopped releasing for A17 due to the release of stable B18.
+If you want to use A17, copying the v1.2 DLL will likely work, but it's untested.
+
+v1.1
+- Converted to mod layout for steam release
+
+v1.0
+- Initial release
