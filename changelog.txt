@@ -1,6 +1,10 @@
 Changelog for ModCheck
 Updating ModCheck will not break existing xml files.
 
+v1.3
+- Fix: checks are now only executed once (massive performance boost)
+- Fix: writing to the log will now always only write one line and never repeat the same many times
+
 v1.2
 - Added custom message support (like logging: My mod detected modX and will patch itself accordingly)
 - Added ability to detect another mod by more than one name (like name v1.3 and name v1.4)

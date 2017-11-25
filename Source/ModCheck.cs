@@ -20,6 +20,8 @@ namespace ModCheck
 
         protected List<string> altModNames = new List<string>();
 
+        private bool internalHasCache = false;
+        private bool internalSuccess  = false;
 
 
         protected bool isModLoaded(string name)
@@ -106,6 +108,14 @@ namespace ModCheck
 
         protected override bool ApplyWorker(XmlDocument xml)
         {
+            // use cached output if it exist
+            // the reason is that the calculations should be done once, not once for each def xml file
+            if (internalHasCache)
+            {
+                return internalSuccess;
+            }
+            internalHasCache = true;
+            
             try
             {
                 if (modName.NullOrEmpty()) throw new ArgumentException("MissingModName");
@@ -114,13 +124,14 @@ namespace ModCheck
                 // include the modname in the alt names. That way all names will be used if alt names are looped
                 altModNames.Add(modName);
 
-                bool testPassed = isTestPassed();
-                writeLogEntry(testPassed);
-                return testPassed;
+                bool internalSuccess = isTestPassed();
+                writeLogEntry(internalSuccess);
+                return internalSuccess;
             }
             catch (ArgumentException ex)
             {
                 handleError(ex);
+                internalSuccess = false;
                 return false;
             }
         }
