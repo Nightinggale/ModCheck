@@ -3,7 +3,7 @@
 	<name>ModCheck[B18]</name>
 	<author>Nightinggale</author>
 	<url>https://ludeon.com/forums/index.php?topic=36534.0</url>
-	<targetVersion>0.18.3</targetVersion>
+	<targetVersion>0.18.4</targetVersion>
 	<description>Adds the ability to create errors if required mods aren't loaded or incompatible mods are loaded as well as adding patch conditions related to other mods.
 	
 For players:

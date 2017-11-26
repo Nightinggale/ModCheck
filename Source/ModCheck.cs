@@ -124,7 +124,7 @@ namespace ModCheck
                 // include the modname in the alt names. That way all names will be used if alt names are looped
                 altModNames.Add(modName);
 
-                bool internalSuccess = isTestPassed();
+                internalSuccess = isTestPassed();
                 writeLogEntry(internalSuccess);
                 return internalSuccess;
             }

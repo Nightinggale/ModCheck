@@ -1,6 +1,9 @@
 Changelog for ModCheck
 Updating ModCheck will not break existing xml files.
 
+v1.4
+- Fixed issue where cache failed to update as needed
+
 v1.3
 - Fix: checks are now only executed once (massive performance boost)
 - Fix: writing to the log will now always only write one line and never repeat the same many times
