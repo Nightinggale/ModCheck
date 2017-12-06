@@ -237,7 +237,7 @@ namespace ModCheck
             return yourMod + " requires " + modName + " " + version + " but version " + readVersion + " is used";
         }
 
-        private Version getVersion(string versionString, string exceptionType)
+        protected Version getVersion(string versionString, string exceptionType)
         {
 
             if (versionString.NullOrEmpty() || !VersionControl.IsWellFormattedVersionString(versionString))
@@ -271,5 +271,68 @@ namespace ModCheck
             }
         }
     }
-    
+
+    // check that the given version is the same or lower than the version read from the mod
+    public class isModSyncVersion : ModCheckBase
+    {
+        private string version;
+
+        protected override string getDefaultErrorString()
+        {
+            int index = getModLoadIndex(modName);
+            ModMetaData MetaData = ModsConfig.ActiveModsInLoadOrder.ElementAt(index);
+            string ModVersion = RimWorld_ModSyncNinja.FileUtil.GetModSyncVersionForMod(MetaData.RootDir);
+            return yourMod + " requires " + modName + " " + version + " but version " + ModVersion + " is used";
+        }
+
+        protected override bool isTestPassed()
+        {
+            int index = getModLoadIndex(modName);
+            if (index != -1)
+            {
+                ModMetaData MetaData = ModsConfig.ActiveModsInLoadOrder.ElementAt(index);
+                string ModVersion = RimWorld_ModSyncNinja.FileUtil.GetModSyncVersionForMod(MetaData.RootDir);
+
+                Version current;
+                try
+                {
+                    current = new Version(ModVersion);
+                }
+                catch
+                {
+                    throw new ArgumentException("CurrentVersionUnreadable");
+                }
+
+                Version min;
+                try
+                {
+                    min = new Version(version);
+                }
+                catch
+                {
+                    throw new ArgumentException("MinVersionUnreadable");
+                }
+
+                return current.CompareTo(min) > -1;
+            }
+
+            return true;
+        }
+
+        protected override void handleError(ArgumentException ex)
+        {
+            if (ex.Message == "MinVersionUnreadable")
+            {
+                Log.Error("ModCheck.isModSyncVersion used with an invalid string. Needs to be 2-4 ints divided by periods.");
+            }
+            else if (ex.Message == "CurrentVersionUnreadable")
+            {
+                Log.Error("ModCheck.isModSyncVersion: " + modName + " has an invalid version. It needs to be 2-4 ints divided by periods.");
+            }
+            else
+            {
+                base.handleError(ex);
+            }
+        }
+    }
 }
