@@ -103,6 +103,8 @@ Tag: version (mandatory)
 This is the version string from the oldest version you will accept for your mod to work.
 
 ### isModSyncVersion
+(added in v1.5)
+
 Will pass if ModSync version of modName is the same or newer than version.
 
 Tag: version (mandatory)
