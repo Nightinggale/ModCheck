@@ -1,6 +1,10 @@
 Changelog for ModCheck
 Updating ModCheck will not break existing xml files.
 
+v1.6
+- Added FindFile to greatly speed up patch files
+- Added patch operation profiling (with verbose logging only)
+
 v1.5
 - Added ModSync.xml
 - Added PatchOperation isModSyncVersion

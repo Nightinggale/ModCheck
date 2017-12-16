@@ -32,6 +32,10 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="0Harmony, Version=1.0.9.1, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>Assemblies\0Harmony.dll</HintPath>
+    </Reference>
     <Reference Include="Assembly-CSharp">
       <HintPath>..\..\RimWorldWin_Data\Managed\Assembly-CSharp.dll</HintPath>
       <Private>False</Private>
@@ -47,8 +51,11 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Source\Harmony.cs" />
     <Compile Include="Source\FileUtil.cs" />
+    <Compile Include="Source\Memory.cs" />
     <Compile Include="Source\ModCheck.cs" />
+    <Compile Include="Source\OperationsUncached.cs" />
     <Compile Include="Source\Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
