@@ -141,15 +141,15 @@ namespace ModCheck
                                 patches.Add(timeSpendHere);
                             }
                             totalTime += total;
-                            output += ("\n   " + (total / 10000f).ToString("F4").PadLeft(10) + " ms " + lastMod);
+                            output += ("\n   " + ((total * 1000f)/ Stopwatch.Frequency).ToString("F4").PadLeft(10) + " ms " + lastMod);
                             foreach (long patchTime in (patches))
                             {
-                                output += ("\n         " + (patchTime / 10000f).ToString("F4").PadLeft(10) + " ms");
+                                output += ("\n         " + ((patchTime * 1000f) / Stopwatch.Frequency).ToString("F4").PadLeft(10) + " ms");
                             }
                             patches.Clear();
                         }
                     }
-                    output += "\nTotal time spent patching: " + (totalTime / 10000f).ToString("F4").PadLeft(10) + " ms";
+                    output += "\nTotal time spent patching: " + ((totalTime* 1000f)/ Stopwatch.Frequency).ToString("F4").PadLeft(10) + " ms";
                     Log.Message(output);
                 }
             }
