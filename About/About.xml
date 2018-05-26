@@ -3,12 +3,12 @@
 	<name>ModCheck[B18]</name>
 	<author>Nightinggale</author>
 	<url>https://ludeon.com/forums/index.php?topic=36534.0</url>
-	<targetVersion>0.18.6</targetVersion>
-	<description>Adds the ability to create errors if required mods aren't loaded or incompatible mods are loaded as well as adding patch conditions related to other mods.
+	<targetVersion>0.18.7</targetVersion>
+	<description>Adds more patching operations for modders and makes RimWorld start up faster due to faster patching.
 	
 For players:
 Load this before Core
-Technically load order often doesn't matter, but in some cases it's good to have before any mod using ModCheck and nothing bad will happen from loading before Core.
+If all mods keep ModCheck up to date, then this mod is not even needed. However if mods use multiple versions (like just after ModCheck has been updated), then loading the newest first becomes important, hence this mod and the need to load first.
 
 For modders:
 Follow the link for a guide on how to make your mod use the included features.</description>

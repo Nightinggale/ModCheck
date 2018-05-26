@@ -15,6 +15,9 @@ namespace ModCheck
 
             // setup table of patch ownership
             Memory.Instance.init();
+
+            // check DLL version of ModCheck to ensure the newest is in use
+            VersionChecker.CheckDLLVersion();
         }
     }
     
