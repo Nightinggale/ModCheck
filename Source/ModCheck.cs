@@ -9,14 +9,10 @@ namespace ModCheck
 {
 #pragma warning disable CS0649
 
-    public abstract class ModCheckBase : PatchOperation
+    public abstract class ModCheckBase : ModCheckLog
     {
         protected string modName;
         protected string yourMod;
-        protected bool errorOnFail = false;
-
-        protected string customMessageSuccess;
-        protected string customMessageFail;
 
         protected List<string> altModNames = new List<string>();
 
@@ -47,51 +43,6 @@ namespace ModCheck
         {
             Log.Error("Base isTestPassed() called");
             return false;
-        }
-
-        protected virtual string getDefaultErrorString()
-        {
-            Log.Error("Base getDefaultErrorString() called");
-            return null;
-        }
-
-        private void writeLogEntry(bool testPassed)
-        {
-            string messageStr = null;
-
-            if (testPassed)
-            {
-                if (!customMessageSuccess.NullOrEmpty())
-                {
-                    messageStr = customMessageSuccess;
-                }
-            }
-            else
-            {
-                if (!customMessageFail.NullOrEmpty())
-                {
-                    messageStr = customMessageFail;
-                }
-                if (errorOnFail)
-                {
-                    if (messageStr.NullOrEmpty())
-                    {
-                        messageStr = getDefaultErrorString();
-                    }
-                }
-            }
-
-            if (!messageStr.NullOrEmpty())
-            {
-                if (!testPassed && errorOnFail)
-                {
-                    Log.Error(messageStr);
-                }
-                else
-                {
-                    Log.Message(messageStr);
-                }
-            }
         }
 
         protected virtual void handleError(ArgumentException ex)
@@ -125,7 +76,7 @@ namespace ModCheck
                 altModNames.Add(modName);
 
                 internalSuccess = isTestPassed();
-                writeLogEntry(internalSuccess);
+                printLogMessages(internalSuccess);
                 return internalSuccess;
             }
             catch (ArgumentException ex)
