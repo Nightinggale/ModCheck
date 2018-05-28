@@ -30,7 +30,7 @@ namespace ModCheck
             }
         }
 
-        public static void CheckDLLVersion()
+        public static bool IsNewestVersion()
         {
             string mod = Assembly.GetExecutingAssembly().GetName().Name;
             string DLLname = mod + ".dll";
@@ -65,7 +65,7 @@ namespace ModCheck
             if (DLLVersion.CompareTo(maxVersion) < 0)
             {
                 // only the newest version should print output to prevent each version from printing the same warnings. Once should be enough
-                return;
+                return false;
             }
 
             if (firstVersion.CompareTo(maxVersion) < 0)
@@ -80,6 +80,8 @@ namespace ModCheck
                     Log.Warning("[" + loopItem.mod +"] Using outdated " + DLLname);
                 }
             }
+
+            return true;
         }
     }
 }

@@ -10,14 +10,15 @@ namespace ModCheck
     {
         public HarmonyStarter(ModContentPack content) : base (content)
         {
-            var harmony = HarmonyInstance.Create("com.rimworld.modcheck");
-            harmony.PatchAll(Assembly.GetExecutingAssembly());
+            // only use Harmony on the newest version of the DLL
+            if (VersionChecker.IsNewestVersion())
+            {
+                var harmony = HarmonyInstance.Create("com.rimworld.modcheck");
+                harmony.PatchAll(Assembly.GetExecutingAssembly());
 
-            // setup table of patch ownership
-            Memory.Instance.init();
-
-            // check DLL version of ModCheck to ensure the newest is in use
-            VersionChecker.CheckDLLVersion();
+                // setup table of patch ownership
+                Memory.Instance.init();
+            }
         }
     }
     
