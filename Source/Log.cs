@@ -42,14 +42,15 @@ namespace ModCheck
             string arg1 = Memory.getCurrentFileName();   // name of xml file being patched
             string arg2 = Memory.getCurrentPatchOwner(); // name of the mod providing the patch file
             string arg3 = Memory.getCurrentPatchName();  // name of the root operation of the current patch operation (empty string if none is set)
+            string arg4 = this.getPatchName();           // name of the current operation
 
             try
             {
-                return String.Format(input, arg0, arg1, arg2, arg3);
+                return String.Format(input, arg0, arg1, arg2, arg3, arg4);
             }
             catch
             {
-                Log.Error("[ModCheck] Mod " + arg2 + " " + arg3 + " is using out of range argument IDs in the following string: (max number is 3)\n" + input);
+                Log.Error("[ModCheck] Mod " + arg2 + " " + arg3 + " is using out of range argument IDs in the following string: (max number is 4)\n" + input);
                 return null;
             }
         }

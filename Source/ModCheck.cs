@@ -49,7 +49,7 @@ namespace ModCheck
         {
             if (ex.Message == "MissingModName")
             {
-                Log.Error("ModCheck: used with missing or empty modName");
+                printString("{2} {3} contains operation {4} with missing modName", Seriousness.Error);
             }
         }
 
@@ -187,11 +187,11 @@ namespace ModCheck
         {
             if (ex.Message == "MixedMode")
             {
-                printString("{2} {3} contains a LoadOrder operation with tags for both mode 1 and 2 (mixed mode not supported)", Seriousness.Error);
+                printString("{2} {3} contains LoadOrder operation {4} with tags for both mode 1 and 2 (mixed mode not supported)", Seriousness.Error);
             }
             else if (ex.Message == "MissingModName")
             {
-                printString("{2} {3} contains a LoadOrder operation in mode 2, which is missing modName", Seriousness.Error);
+                printString("{2} {3} contains LoadOrder operation {4} in mode 2, which is missing modName", Seriousness.Error);
             }
             else
             {
@@ -255,11 +255,11 @@ namespace ModCheck
         {
             if (ex.Message == "MinVersionUnreadable")
             {
-                Log.Error("ModCheck.isVersion used with an invalid string. Needs the format int.int.int (gameengine has the same requirement)");
+                printString("{2} {3} contains isVersion operation {4} with invalid version tag. Should be 2-4 ints divided by periods (like 1.2.3)", Seriousness.Error);
             }
             else if (ex.Message == "CurrentVersionUnreadable")
             {
-                Log.Error("ModCheck.isVersion used with an invalid string. Needs the format int.int.int (gameengine has the same requirement)");
+                printString("{2} {3} contains isVersion operation {4}, which read an ivalid version tag from another mod. Should be 2-4 ints divided by periods (like 1.2.3)", Seriousness.Error);
             }
             else
             {
@@ -320,11 +320,11 @@ namespace ModCheck
         {
             if (ex.Message == "MinVersionUnreadable")
             {
-                Log.Error("ModCheck.isModSyncVersion used with an invalid string. Needs to be 2-4 ints divided by periods.");
+                printString("{2} {3} contains isModSyncVersion operation {4} with invalid version tag. Should be 2-4 ints divided by periods (like 1.2.3)", Seriousness.Error);
             }
             else if (ex.Message == "CurrentVersionUnreadable")
             {
-                Log.Error("ModCheck.isModSyncVersion: " + modName + " has an invalid version. It needs to be 2-4 ints divided by periods.");
+                printString("{2} {3} contains isModSyncVersion operation {4}, which read an ivalid version tag from another mod. Should be 2-4 ints divided by periods (like 1.2.3)", Seriousness.Error);
             }
             else
             {
