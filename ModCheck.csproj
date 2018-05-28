@@ -53,6 +53,7 @@
   <ItemGroup>
     <Compile Include="Source\Harmony.cs" />
     <Compile Include="Source\FileUtil.cs" />
+    <Compile Include="Source\LogicOperations.cs" />
     <Compile Include="Source\Memory.cs" />
     <Compile Include="Source\Log.cs" />
     <Compile Include="Source\VersionControl.cs" />
