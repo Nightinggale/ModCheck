@@ -51,10 +51,6 @@ namespace ModCheck
             {
                 Log.Error("ModCheck: used with missing or empty modName");
             }
-            else if (ex.Message == "MissingYourMod")
-            {
-                Log.Error("ModCheck: used with missing or empty yourMod");
-            }
         }
 
         protected override bool ApplyWorker(XmlDocument xml)
@@ -69,11 +65,11 @@ namespace ModCheck
             
             try
             {
-                if (modName.NullOrEmpty()) throw new ArgumentException("MissingModName");
-                if (yourMod.NullOrEmpty()) throw new ArgumentException("MissingYourMod");
-
                 // include the modname in the alt names. That way all names will be used if alt names are looped
-                altModNames.Add(modName);
+                if (!modName.NullOrEmpty())
+                {
+                    altModNames.Add(modName);
+                }
 
                 internalSuccess = isTestPassed();
                 printLogMessages(internalSuccess);
@@ -98,6 +94,7 @@ namespace ModCheck
         protected override bool isTestPassed()
         {
             bool modLoaded = false;
+            if (modName.NullOrEmpty()) throw new ArgumentException("MissingModName");
 
             foreach (string loopname in altModNames)
             {
@@ -112,18 +109,44 @@ namespace ModCheck
         {
             if (incompatible)
             {
-                return "Incompatible mods in use: \"" + modName + "\" can't be used with \"" + yourMod + "\"";
+                return "Incompatible mods in use: \"" + modName + "\" can't be used with \"{2}\"";
             }
-            return "Missing mod: \"" + modName + "\", needed by \"" + yourMod + "\"";
+            return "Missing mod: \"" + modName + "\", needed by \"{2}\"";
         }
     }
 
     public class loadOrder : ModCheckBase
     {
         private bool yourModFirst = false;
+        private string first;
+        private string last;
 
         protected override bool isTestPassed()
         {
+            if (!first.NullOrEmpty() || !last.NullOrEmpty())
+            {
+                if (yourModFirst || !yourMod.NullOrEmpty() || !modName.NullOrEmpty() || altModNames.Count > 0)
+                {
+                    throw new ArgumentException("MixedMode");
+                }
+
+                // insert the current patch owner if one field is empty
+                if (first.NullOrEmpty())
+                {
+                    first = Memory.getCurrentPatchOwner();
+                }
+                else if (last.NullOrEmpty())
+                {
+                    last = Memory.getCurrentPatchOwner();
+                }
+                return isModLoadedBeforeMod(first, last);
+            }
+
+            if (yourMod.NullOrEmpty())
+            {
+                yourMod = Memory.getCurrentPatchOwner();
+            }
+            if (modName.NullOrEmpty()) throw new ArgumentException("MissingModName");
             foreach (string loopName in altModNames)
             {
                 bool success = yourModFirst ? isModLoadedBeforeMod(yourMod, loopName) : isModLoadedBeforeMod(loopName, yourMod);
@@ -137,11 +160,16 @@ namespace ModCheck
 
         protected override string getDefaultErrorString()
         {
+            if (!first.NullOrEmpty())
+            {
+                return "Mod load order: " + first + " needs to be loaded before " + last;
+            }
+
             if (yourModFirst)
             {
-                return "Mod load order: \"" + yourMod + "\" needs to be loaded before \"" + modName + "\"";
+                return "Mod load order: \"{2}\" needs to be loaded before \"" + modName + "\"";
             }
-            return "Mod load order: \"" + modName + "\" needs to be loaded before \"" + yourMod + "\"";
+            return "Mod load order: \"" + modName + "\" needs to be loaded before \"{2}\"";
         }
 
         protected bool isModLoadedBeforeMod(string first, string last)
@@ -154,6 +182,22 @@ namespace ModCheck
             int lastIndex = getModLoadIndex(last);
             return lastIndex == -1 || firstIndex < lastIndex;
         }
+
+        protected override void handleError(ArgumentException ex)
+        {
+            if (ex.Message == "MixedMode")
+            {
+                printString("{2} {3} contains a LoadOrder operation with tags for both mode 1 and 2 (mixed mode not supported)", Seriousness.Error);
+            }
+            else if (ex.Message == "MissingModName")
+            {
+                printString("{2} {3} contains a LoadOrder operation in mode 2, which is missing modName", Seriousness.Error);
+            }
+            else
+            {
+                base.handleError(ex);
+            }
+        }
     }
     
     // check that the given version is the same or lower than the version read from the mod
@@ -164,6 +208,7 @@ namespace ModCheck
         protected override bool isTestPassed()
         {
             Version min = getVersion(version, "MinVersionUnreadable");
+            if (modName.NullOrEmpty()) throw new ArgumentException("MissingModName");
 
             foreach (string loopName in altModNames)
             {
@@ -185,7 +230,7 @@ namespace ModCheck
         {
             int index = getModLoadIndex(modName);
             string readVersion = ModsConfig.ActiveModsInLoadOrder.ElementAt(index).TargetVersion;
-            return yourMod + " requires " + modName + " " + version + " but version " + readVersion + " is used";
+            return Memory.getCurrentPatchOwner() + " requires " + modName + " " + version + " but version " + readVersion + " is used";
         }
 
         protected Version getVersion(string versionString, string exceptionType)
@@ -230,10 +275,11 @@ namespace ModCheck
 
         protected override string getDefaultErrorString()
         {
+            if (modName.NullOrEmpty()) throw new ArgumentException("MissingModName");
             int index = getModLoadIndex(modName);
             ModMetaData MetaData = ModsConfig.ActiveModsInLoadOrder.ElementAt(index);
             string ModVersion = RimWorld_ModSyncNinja.FileUtil.GetModSyncVersionForMod(MetaData.RootDir);
-            return yourMod + " requires " + modName + " " + version + " but version " + ModVersion + " is used";
+            return Memory.getCurrentPatchOwner() + " requires " + modName + " " + version + " but version " + ModVersion + " is used";
         }
 
         protected override bool isTestPassed()

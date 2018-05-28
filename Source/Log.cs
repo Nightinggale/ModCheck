@@ -28,7 +28,7 @@ namespace ModCheck
         protected string customMessageSuccess;
         protected string customMessageFail;
 
-        enum Seriousness { Message, Warning, Error };
+        public enum Seriousness { Message, Warning, Error };
 
         protected virtual string getDefaultErrorString()
         {
@@ -54,7 +54,7 @@ namespace ModCheck
             }
         }
 
-        private void printString(string input, Seriousness type)
+        protected void printString(string input, Seriousness type)
         {
             if (input.NullOrEmpty())
             {

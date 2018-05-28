@@ -4,11 +4,17 @@ Updating ModCheck will not break existing xml files.
 v1.7
 - Rewritten the log writing system to give better control/more features to patch writers
 - Changed profiling output to write total time on top, making it appear in the log overview
+
+- Added new mode to LoadOrder. It can now use first and last strings instead of the old approach (which still works)
 - Added Sequence operation, which does the same as the vanilla operation, but with ModCheck specific options
 - Added logic operations AND, OR, IfElse and Once
 - Added warning/error if outdated versions of ModCheck are being loaded (risk of new vs old conflicts)
-- Fix: profiling now displays correct time if the hardware has a high precision timer
 - Added a preview logo (thanks to larSyn for drawing it)
+
+- Fix: profiling now displays correct time if the hardware has a high precision timer
+
+- Removed the need to include yourMod and modName unless they are actually used
+
 
 v1.6
 - Added FindFile to greatly speed up patch files
