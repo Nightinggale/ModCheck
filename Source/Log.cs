@@ -6,7 +6,7 @@ namespace ModCheck
 {
 #pragma warning disable CS0649
 
-    public abstract class ModCheckLog : PatchOperation
+    public abstract class ModCheckLog : ModCheckNameClass
     {
         protected string MessageSuccess;
         protected string MessageFail;
@@ -41,14 +41,15 @@ namespace ModCheck
             string arg0 = Memory.getCurrentModName();    // mod, which is being patched
             string arg1 = Memory.getCurrentFileName();   // name of xml file being patched
             string arg2 = Memory.getCurrentPatchOwner(); // name of the mod providing the patch file
+            string arg3 = Memory.getCurrentPatchName();  // name of the root operation of the current patch operation (empty string if none is set)
 
             try
             {
-                return String.Format(input, arg0, arg1, arg2);
+                return String.Format(input, arg0, arg1, arg2, arg3);
             }
             catch
             {
-                Log.Error("[ModCheck] Mod " + arg2 + " is using out of range argument IDs in the following string:\n" + input);
+                Log.Error("[ModCheck] Mod " + arg2 + " " + arg3 + " is using out of range argument IDs in the following string: (max number is 3)\n" + input);
                 return null;
             }
         }

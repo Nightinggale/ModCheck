@@ -13,6 +13,7 @@ namespace ModCheck
         private static Memory instance = new Memory();
 
         private List<string> patchOwners = new List<string>();
+        private List<string> patchNames = new List<string>();
         private List<long> timeSpend = new List<long>();
 
         private int currentPatch;
@@ -46,6 +47,15 @@ namespace ModCheck
             {
                 foreach (PatchOperation patch in mod.Patches)
                 {
+                    try
+                    {
+                        ModCheckNameClass temp = patch as ModCheckNameClass;
+                        patchNames.Add(temp.getPatchName());
+                    }
+                    catch
+                    {
+                        patchNames.Add("");
+                    }
                     patchOwners.Add(mod.Name);
                     timeSpend.Add(0);
                 }
@@ -100,6 +110,11 @@ namespace ModCheck
             return Instance.patchOwners[Instance.currentPatch];
         }
 
+        public static string getCurrentPatchName()
+        {
+            return Instance.patchNames[Instance.currentPatch];
+        }
+
 
         // print to log and free memory
         public static void Clear()
@@ -117,39 +132,45 @@ namespace ModCheck
                     // print profiling results to the log
 
                     string lastMod = "";
-                    List<long> patches = new List<long>();
 
                     string output = "";
+                    string modlines = "";
                     long totalTime = 0;
 
-                    output += ("[ModCheck] Time spend on each patch:");
+                    output += ("\nTime spent on each patch:");
 
                     for (int i = 0; i < max; ++i)
                     {
                         if (lastMod != Instance.patchOwners[i])
                         {
+                            // current patch operation has a different owner than the last one, meaning it's the first operation in a new mod
+
                             lastMod = Instance.patchOwners[i];
                             long total = 0;
+                            // loop though all operations in the mod in question
                             for (int j = i; j < max; ++j)
                             {
                                 if (lastMod != Instance.patchOwners[j])
                                 {
+                                    // new owner means no more operations in this mod
                                     break;
                                 }
                                 long timeSpendHere = Instance.timeSpend[j];
+                                // accumulate total mod time
                                 total += timeSpendHere;
-                                patches.Add(timeSpendHere);
+                                // store the line generated for this operation in a temp string
+                                modlines += ("\n         " + ((timeSpendHere * 1000f) / Stopwatch.Frequency).ToString("F4").PadLeft(10) + " ms   " + Instance.patchNames[j]);
                             }
+                            // all operations for the mod in question have been added
                             totalTime += total;
+                            // print the mod total
                             output += ("\n   " + ((total * 1000f)/ Stopwatch.Frequency).ToString("F4").PadLeft(10) + " ms " + lastMod);
-                            foreach (long patchTime in (patches))
-                            {
-                                output += ("\n         " + ((patchTime * 1000f) / Stopwatch.Frequency).ToString("F4").PadLeft(10) + " ms");
-                            }
-                            patches.Clear();
+                            // print the already generated lines for each operation
+                            output += modlines;
+                            modlines = ""; // reset for next mod
                         }
                     }
-                    output += "\nTotal time spent patching: " + ((totalTime* 1000f)/ Stopwatch.Frequency).ToString("F4").PadLeft(10) + " ms";
+                    output = "[ModCheck] Total time spent patching: " + ((totalTime* 1000f)/ Stopwatch.Frequency).ToString("F4").PadLeft(10) + " ms" + output;
                     Log.Message(output);
                 }
             }

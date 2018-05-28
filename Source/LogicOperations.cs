@@ -6,7 +6,20 @@ namespace ModCheck
 {
 #pragma warning disable CS0649
 
-    public class AND : PatchOperation
+    public class ModCheckNameClass : PatchOperation
+    {
+        private string patchName;
+        public string getPatchName()
+        {
+            if (patchName.NullOrEmpty())
+            {
+                return "";
+            }
+            return patchName;
+        }
+    }
+
+    public class AND : ModCheckNameClass
     {
         private List<PatchOperation> tests;
 
@@ -23,7 +36,7 @@ namespace ModCheck
         }
     }
 
-    public class OR : PatchOperation
+    public class OR : ModCheckNameClass
     {
         private List<PatchOperation> tests;
 
@@ -40,7 +53,7 @@ namespace ModCheck
         }
     }
 
-    public class IfElse : PatchOperation
+    public class IfElse : ModCheckNameClass
     {
         private PatchOperation test;
         private PatchOperation passed;
@@ -68,7 +81,7 @@ namespace ModCheck
         }
     }
 
-    public class Once : PatchOperation
+    public class Once : ModCheckNameClass
     {
         private bool executed = false;
         protected override bool ApplyWorker(XmlDocument xml)
