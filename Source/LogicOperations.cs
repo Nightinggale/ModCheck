@@ -94,4 +94,34 @@ namespace ModCheck
             return true;
         }
     }
+
+    public class Sequence : ModCheckNameClass
+    {
+        private List<PatchOperation> operations;
+        private bool once = false;
+        private bool stopOnFail = true;
+
+
+        private bool executed = false;
+        private bool returnValue = true;
+
+        protected override bool ApplyWorker(XmlDocument xml)
+        {
+            if (once && executed)
+            {
+                return false;
+            }
+            executed = true;
+
+            foreach (PatchOperation current in operations)
+            {
+                if (!current.Apply(xml))
+                {
+                    returnValue = false;
+                    if (stopOnFail) return false;
+                }
+            }
+            return returnValue;
+        }
+    }
 }

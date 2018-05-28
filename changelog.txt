@@ -3,6 +3,8 @@ Updating ModCheck will not break existing xml files.
 
 v1.7
 - Rewritten the log writing system to give better control/more features to patch writers
+- Changed profiling output to write total time on top, making it appear in the log overview
+- Added Sequence operation, which does the same as the vanilla operation, but with ModCheck specific options
 - Added logic operations AND, OR, IfElse and Once
 - Added warning/error if outdated versions of ModCheck are being loaded (risk of new vs old conflicts)
 - Fix: profiling now displays correct time if the hardware has a high precision timer
