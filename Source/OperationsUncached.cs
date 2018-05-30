@@ -4,7 +4,8 @@ using Verse;
 namespace ModCheck
 {
 #pragma warning disable CS0649
-    public class FindFile : ModCheckNameClass
+    public class FindFile : findFile { }
+    public class findFile : ModCheckNameClass
     {
         private string modName;
         private string file;

@@ -53,7 +53,8 @@ namespace ModCheck
         }
     }
 
-    public class IfElse : ModCheckNameClass
+    public class IfElse : ifElse { }
+    public class ifElse : ModCheckNameClass
     {
         private PatchOperation test;
         private PatchOperation passed;
@@ -81,7 +82,8 @@ namespace ModCheck
         }
     }
 
-    public class Once : ModCheckNameClass
+    public class Once : once { }
+    public class once : ModCheckNameClass
     {
         private bool executed = false;
         protected override bool ApplyWorker(XmlDocument xml)
@@ -95,7 +97,8 @@ namespace ModCheck
         }
     }
 
-    public class Sequence : ModCheckNameClass
+    public class Sequence : sequence { }
+    public class sequence : ModCheckNameClass
     {
         private List<PatchOperation> operations;
         private bool once = false;

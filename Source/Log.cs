@@ -44,13 +44,15 @@ namespace ModCheck
             string arg3 = Memory.getCurrentPatchName();  // name of the root operation of the current patch operation (empty string if none is set)
             string arg4 = this.getPatchName();           // name of the current operation
 
+
+            // NOTE: when adding new arguments, update the number in the error message
             try
             {
                 return String.Format(input, arg0, arg1, arg2, arg3, arg4);
             }
             catch
             {
-                Log.Error("[ModCheck] Mod " + arg2 + " " + arg3 + " is using out of range argument IDs in the following string: (max number is 4)\n" + input);
+                Log.Error("[ModCheck] Mod " + arg2 + " " + arg3 + " - " + arg4 + " is using out of range argument IDs in the following string: (max number is 4)\n" + input);
                 return null;
             }
         }
@@ -144,7 +146,8 @@ namespace ModCheck
 
     }
 
-    public class LogWrite : ModCheckLog
+    public class LogWrite : logWrite { }
+    public class logWrite : ModCheckLog
     {
         bool Once = true;
         bool internalExecuted = false;

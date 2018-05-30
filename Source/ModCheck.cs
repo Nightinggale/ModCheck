@@ -87,6 +87,7 @@ namespace ModCheck
     // tells if a mod is loaded
     // returns true if it is and false if not
     // setting incompatible to true will invert the output and change error messages
+    public class IsModLoaded : isModLoaded { }
     public class isModLoaded : ModCheckBase
     {
         private bool incompatible = false;
@@ -115,6 +116,7 @@ namespace ModCheck
         }
     }
 
+    public class LoadOrder : loadOrder { }
     public class loadOrder : ModCheckBase
     {
         private bool yourModFirst = false;
@@ -201,6 +203,7 @@ namespace ModCheck
     }
     
     // check that the given version is the same or lower than the version read from the mod
+    public class IsVersion : isVersion { }
     public class isVersion : ModCheckBase
     {
         private string version;
@@ -269,6 +272,7 @@ namespace ModCheck
     }
 
     // check that the given version is the same or lower than the version read from the mod
+    public class IsModSyncVersion : isModSyncVersion { }
     public class isModSyncVersion : ModCheckBase
     {
         private string version;
