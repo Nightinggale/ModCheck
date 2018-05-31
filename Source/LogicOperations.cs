@@ -17,6 +17,10 @@ namespace ModCheck
             }
             return patchName;
         }
+
+        public virtual void resetRun()
+        {
+        }
     }
 
     public class AND : ModCheckNameClass
@@ -34,6 +38,19 @@ namespace ModCheck
             }
             return true;
         }
+
+        public override void resetRun()
+        {
+            foreach (PatchOperation current in tests)
+            {
+                try
+                {
+                    ModCheckNameClass temp = current as ModCheckNameClass;
+                    temp.resetRun();
+                }
+                catch { }
+            }
+        }
     }
 
     public class OR : ModCheckNameClass
@@ -50,6 +67,19 @@ namespace ModCheck
                 }
             }
             return false;
+        }
+
+        public override void resetRun()
+        {
+            foreach (PatchOperation current in tests)
+            {
+                try
+                {
+                    ModCheckNameClass temp = current as ModCheckNameClass;
+                    temp.resetRun();
+                }
+                catch { }
+            }
         }
     }
 
@@ -79,6 +109,28 @@ namespace ModCheck
                 return inner;
             }
             return result;
+        }
+
+        public override void resetRun()
+        {
+            try
+            {
+                ModCheckNameClass temp = test as ModCheckNameClass;
+                temp.resetRun();
+            }
+            catch { }
+            try
+            {
+                ModCheckNameClass temp = passed as ModCheckNameClass;
+                temp.resetRun();
+            }
+            catch { }
+            try
+            {
+                ModCheckNameClass temp = failed as ModCheckNameClass;
+                temp.resetRun();
+            }
+            catch { }
         }
     }
 
@@ -125,6 +177,51 @@ namespace ModCheck
                 }
             }
             return returnValue;
+        }
+
+        public override void resetRun()
+        {
+            foreach (PatchOperation current in operations)
+            {
+                try
+                {
+                    ModCheckNameClass temp = current as ModCheckNameClass;
+                    temp.resetRun();
+                }
+                catch { }
+            }
+        }
+    }
+
+    public class Loop : loop { }
+    public class loop : ModCheckNameClass
+    {
+        private int times = 1;
+        private PatchOperation operation;
+        private bool reset = true;
+
+        protected override bool ApplyWorker(XmlDocument xml)
+        {
+            if (operation == null)
+            {
+                Log.Error("[ModCheck] loop set without operation");
+                return false;
+            }
+
+            for (int i = 0; i < times; ++i)
+            {
+                if (reset)
+                {
+                    try
+                    {
+                        ModCheckNameClass temp = operation as ModCheckNameClass;
+                        temp.resetRun();
+                    }
+                    catch { }
+                }
+                operation.Apply(xml);
+            }
+            return true;
         }
     }
 }

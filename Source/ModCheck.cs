@@ -82,6 +82,11 @@ namespace ModCheck
                 return false;
             }
         }
+
+        public override void resetRun()
+        {
+            internalHasCache = false;
+        }
     }
 
     // tells if a mod is loaded

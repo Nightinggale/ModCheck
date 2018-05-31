@@ -8,7 +8,7 @@ v1.7
 - All PatchOperation names can now be used starting with both upper and lower case (fixes naming inconsistency)
 - Added new mode to LoadOrder. It can now use first and last strings instead of the old approach (which still works)
 - Added Sequence operation, which does the same as the vanilla operation, but with ModCheck specific options
-- Added logic operations AND, OR, IfElse and Once
+- Added logic operations AND, OR, IfElse, Loop and Once
 - Added warning/error if outdated versions of ModCheck are being loaded (risk of new vs old conflicts)
 - Added a preview logo (thanks to larSyn for drawing it)
 - Fix: profiling now displays correct time if the hardware has a high precision timer
