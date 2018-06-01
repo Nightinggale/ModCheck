@@ -4,4 +4,10 @@
   <ModName>ModCheck[B18]</ModName>
   <Version>1.7</Version>
   <SaveBreaking>False</SaveBreaking>
+  <Host name="Github">
+    <Owner>Nightinggale</Owner>
+    <Project>ModCheck</Project>
+    <DownloadFrom>ModSyncReleases</DownloadFrom>
+    <Branch>master</Branch>
+  </Host>
 </ModSyncNinjaData>

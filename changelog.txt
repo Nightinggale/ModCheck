@@ -11,6 +11,7 @@ v1.7
 - Added logic operations AND, OR, IfElse, Loop and Once
 - Added warning/error if outdated versions of ModCheck are being loaded (risk of new vs old conflicts)
 - Added a preview logo (thanks to larSyn for drawing it)
+- Added support for ModSync RW
 - Fix: profiling now displays correct time if the hardware has a high precision timer
 - Removed the need to include yourMod and modName unless they are actually used
 
