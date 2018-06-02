@@ -66,7 +66,7 @@ namespace ModCheck
             try
             {
                 // include the modname in the alt names. That way all names will be used if alt names are looped
-                if (!modName.NullOrEmpty())
+                if (!modName.NullOrEmpty() && !altModNames.Contains(modName))
                 {
                     altModNames.Add(modName);
                 }
@@ -104,7 +104,7 @@ namespace ModCheck
 
             foreach (string loopname in altModNames)
             {
-                modLoaded = isModLoaded(loopname);
+                modLoaded = Memory.isModLoaded(loopname);
                 if (modLoaded) break;
             }
 
@@ -181,12 +181,12 @@ namespace ModCheck
 
         protected bool isModLoadedBeforeMod(string first, string last)
         {
-            int firstIndex = getModLoadIndex(first);
+            int firstIndex = Memory.getModLoadIndex(first);
             if (firstIndex == -1)
             {
                 return true;
             }
-            int lastIndex = getModLoadIndex(last);
+            int lastIndex = Memory.getModLoadIndex(last);
             return lastIndex == -1 || firstIndex < lastIndex;
         }
 
@@ -220,7 +220,7 @@ namespace ModCheck
 
             foreach (string loopName in altModNames)
             {
-                int index = getModLoadIndex(loopName);
+                int index = Memory.getModLoadIndex(loopName);
                 if (index != -1)
                 {
                     string currentStr = ModsConfig.ActiveModsInLoadOrder.ElementAt(index).TargetVersion;
@@ -236,7 +236,7 @@ namespace ModCheck
 
         protected override string getDefaultErrorString()
         {
-            int index = getModLoadIndex(modName);
+            int index = Memory.getModLoadIndex(modName);
             string readVersion = ModsConfig.ActiveModsInLoadOrder.ElementAt(index).TargetVersion;
             return Memory.getCurrentPatchOwner() + " requires " + modName + " " + version + " but version " + readVersion + " is used";
         }
@@ -285,7 +285,7 @@ namespace ModCheck
         protected override string getDefaultErrorString()
         {
             if (modName.NullOrEmpty()) throw new ArgumentException("MissingModName");
-            int index = getModLoadIndex(modName);
+            int index = Memory.getModLoadIndex(modName);
             ModMetaData MetaData = ModsConfig.ActiveModsInLoadOrder.ElementAt(index);
             string ModVersion = RimWorld_ModSyncNinja.FileUtil.GetModSyncVersionForMod(MetaData.RootDir);
             return Memory.getCurrentPatchOwner() + " requires " + modName + " " + version + " but version " + ModVersion + " is used";
@@ -293,7 +293,7 @@ namespace ModCheck
 
         protected override bool isTestPassed()
         {
-            int index = getModLoadIndex(modName);
+            int index = Memory.getModLoadIndex(modName);
             if (index != -1)
             {
                 ModMetaData MetaData = ModsConfig.ActiveModsInLoadOrder.ElementAt(index);

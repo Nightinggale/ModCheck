@@ -15,6 +15,7 @@ namespace ModCheck
         private List<string> patchOwners = new List<string>();
         private List<string> patchNames = new List<string>();
         private List<long> timeSpend = new List<long>();
+        private Dictionary<string, int> modIndex = new Dictionary<string, int>();
 
         private int currentPatch;
         private Stopwatch stopWatch = Stopwatch.StartNew();
@@ -43,8 +44,11 @@ namespace ModCheck
         // setup called from HarmonyStarter
         public void init()
         {
+            int counter = 0;
             foreach (ModContentPack mod in LoadedModManager.RunningMods)
             {
+                modIndex[mod.Name] = counter;
+                ++counter;
                 foreach (PatchOperation patch in mod.Patches)
                 {
                     try
@@ -113,6 +117,25 @@ namespace ModCheck
         public static string getCurrentPatchName()
         {
             return Instance.patchNames[Instance.currentPatch];
+        }
+
+        public static bool isModLoaded(string name)
+        {
+            return Instance.modIndex.ContainsKey(name);
+        }
+
+        public static int getModLoadIndex(string name)
+        {
+            try
+            {
+                Instance.modIndex.TryGetValue(name, out int index);
+                return index;
+            }
+            catch
+            {
+                return -1;
+            }
+
         }
 
 

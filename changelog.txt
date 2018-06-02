@@ -2,6 +2,7 @@ Changelog for ModCheck
 Updating ModCheck will not break existing xml files.
 
 v1.7
+- Speedboost: cached mod indexes for massive speed boost of some ModCheck internals
 - Rewritten the log writing system to give better control/more features to patch writers
 - Rewritten error messages to make it easier to find the error
 - Changed profiling output to write total time on top, making it appear in the log overview
