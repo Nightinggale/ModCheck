@@ -155,12 +155,8 @@ namespace ModCheck
                     // print profiling results to the log
 
                     string lastMod = "";
-
-                    string output = "";
-                    string modlines = "";
                     long totalTime = 0;
-
-                    output += ("\nTime spent on each patch:");
+                    List<string> modOutput = new List<string>();
 
                     for (int i = 0; i < max; ++i)
                     {
@@ -170,6 +166,7 @@ namespace ModCheck
 
                             lastMod = Instance.patchOwners[i];
                             long total = 0;
+                            string patches = "";
                             // loop though all operations in the mod in question
                             for (int j = i; j < max; ++j)
                             {
@@ -182,19 +179,21 @@ namespace ModCheck
                                 // accumulate total mod time
                                 total += timeSpendHere;
                                 // store the line generated for this operation in a temp string
-                                modlines += ("\n         " + ((timeSpendHere * 1000f) / Stopwatch.Frequency).ToString("F4").PadLeft(10) + " ms   " + Instance.patchNames[j]);
+                                patches += ("\n         " + ((timeSpendHere * 1000f) / Stopwatch.Frequency).ToString("F4").PadLeft(10) + " ms   " + Instance.patchNames[j]);
                             }
                             // all operations for the mod in question have been added
                             totalTime += total;
                             // print the mod total
-                            output += ("\n   " + ((total * 1000f)/ Stopwatch.Frequency).ToString("F4").PadLeft(10) + " ms " + lastMod);
+                            string modLine = ("   " + ((total * 1000f)/ Stopwatch.Frequency).ToString("F4").PadLeft(10) + " ms " + lastMod);
                             // print the already generated lines for each operation
-                            output += modlines;
-                            modlines = ""; // reset for next mod
+                            modOutput.Add(modLine + patches);
                         }
                     }
-                    output = "[ModCheck] Total time spent patching: " + ((totalTime* 1000f)/ Stopwatch.Frequency).ToString("F4").PadLeft(10) + " ms" + output;
-                    Log.Message(output);
+                    Log.Message("[ModCheck] Total time spent patching: " + ((totalTime* 1000f)/ Stopwatch.Frequency).ToString("F4").PadLeft(10) + " ms\nTime spent on each patch:");
+                    foreach (string loopMod in modOutput)
+                    {
+                        Log.Message(loopMod);
+                    }
                 }
             }
 
