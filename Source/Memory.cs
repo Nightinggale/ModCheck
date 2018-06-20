@@ -67,6 +67,11 @@ namespace ModCheck
         }
 
         // calls from Harmony injected methods
+        public void resetModAndFile()
+        {
+            currentModName = "";
+            currentFileName = "";
+        }
 
         public void setCurrentModName(string name)
         {
