@@ -13,6 +13,7 @@ namespace ModCheck
             // only use Harmony on the newest version of the DLL
             if (VersionChecker.IsNewestVersion())
             {
+                Memory.Instance.LoadModCheckPatches();
                 var harmony = HarmonyInstance.Create("com.rimworld.modcheck");
                 harmony.PatchAll(Assembly.GetExecutingAssembly());
 
@@ -96,6 +97,33 @@ namespace ModCheck
                     {
                         yield return iList[i];
                     }
+                }
+            }
+        }
+    }
+
+
+    [HarmonyPatch(typeof(Verse.LoadedModManager))]
+    [HarmonyPatch("LoadModXML")]
+    class ModCheckPatching
+    {
+        [HarmonyPostfix]
+        public static void AddModCheckPatching(List<LoadableXmlAsset> __result)
+        {
+
+
+
+            int iLength = __result.Count;
+            for (int i = 0; i < iLength; ++i)
+            {
+                Memory.Instance.setCurrentModName(__result[i].mod.Name);
+                Memory.setCurrentFileName(__result[i]);
+                Memory.startPatching();
+                foreach (PatchOperation current2 in Memory.Instance.getModCheckPatches())
+                {
+                    
+                    current2.Apply(__result[i].xmlDoc);
+                    
                 }
             }
         }

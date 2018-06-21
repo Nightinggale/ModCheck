@@ -1,6 +1,8 @@
 ﻿using Verse;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.Xml;
+using System.Linq;
 
 // this file contains a singleton, which acts as memory storage for ModCheck
 // this allows memory, which isn't linked to a specific PatchOperation, like the cache system
@@ -10,18 +12,81 @@ namespace ModCheck
 {
     public sealed class Memory
     {
-        private static Memory instance = new Memory();
+        private class PatchMemoryModule
+        {
+            int modIndex;
+            string patchOwner;
+            string patchName;
+            private Stopwatch stopWatch = Stopwatch.StartNew();
+            private string folderString;
 
-        private List<string> patchOwners = new List<string>();
-        private List<string> patchNames = new List<string>();
-        private List<long> timeSpend = new List<long>();
+            public PatchMemoryModule(int index, string owner, PatchOperation patch, bool isModCheckPatch)
+            {
+                modIndex = index;
+                patchOwner = owner;
+                folderString = isModCheckPatch ? "M " : "P ";
+                stopWatch.Reset();
+                try
+                {
+                    ModCheckNameClass temp = patch as ModCheckNameClass;
+                    patchName = temp.getPatchName();
+                }
+                catch
+                {
+                    patchName = "";
+                }
+            }
+
+            public void start()
+            {
+                stopWatch.Start();
+            }
+
+            public void stop()
+            {
+                stopWatch.Stop();
+            }
+
+            public long getTime
+            {
+                get { return stopWatch.ElapsedTicks; }
+            }
+
+            public string getName
+            {
+                get { return patchName; }
+            }
+
+            public string getOwner
+            {
+               get { return patchOwner; }
+            }
+
+            public int getIndex
+            {
+                get { return modIndex; }
+            }
+
+            public string getFolderString
+            {
+                get { return folderString; }
+            }
+        }
+
+        private static Memory instance = new Memory();
         private Dictionary<string, int> modIndex = new Dictionary<string, int>();
 
         private int currentPatch;
-        private Stopwatch stopWatch = Stopwatch.StartNew();
-
         private string currentModName = "";
         private string currentFileName = "";
+
+
+        private List<PatchMemoryModule> PatchMemory = new List<PatchMemoryModule>();
+        private List<PatchMemoryModule> VanillaMemory = new List<PatchMemoryModule>();
+        private bool workingOnModCheckPatches = true;
+
+
+        private List<PatchOperation> patches = new List<PatchOperation>();
 
         // Explicit static constructor to tell C# compiler
         // not to mark type as beforefieldinit
@@ -41,6 +106,18 @@ namespace ModCheck
             }
         }
 
+        private PatchMemoryModule getModule()
+        {
+            if (workingOnModCheckPatches)
+            {
+                return PatchMemory[currentPatch];
+            }
+            else
+            {
+                return VanillaMemory[currentPatch];
+            }
+        }
+
         // setup called from HarmonyStarter
         public void init()
         {
@@ -48,21 +125,11 @@ namespace ModCheck
             foreach (ModContentPack mod in LoadedModManager.RunningMods)
             {
                 modIndex[mod.Name] = counter;
-                ++counter;
                 foreach (PatchOperation patch in mod.Patches)
                 {
-                    try
-                    {
-                        ModCheckNameClass temp = patch as ModCheckNameClass;
-                        patchNames.Add(temp.getPatchName());
-                    }
-                    catch
-                    {
-                        patchNames.Add("");
-                    }
-                    patchOwners.Add(mod.Name);
-                    timeSpend.Add(0);
+                    VanillaMemory.Add(new PatchMemoryModule(counter, mod.Name, patch, false));
                 }
+                ++counter;
             }
         }
 
@@ -92,14 +159,12 @@ namespace ModCheck
         public static void startPatchingWithTimer()
         {
             ++Instance.currentPatch;
-            Instance.stopWatch.Reset();
-            Instance.stopWatch.Start();
+            Instance.getModule().start();
         }
 
         public static void endPatchingWithTimer()
         {
-            Instance.stopWatch.Stop();
-            Instance.timeSpend[Instance.currentPatch] += Instance.stopWatch.ElapsedTicks;
+            Instance.getModule().stop();
         }
 
         // public access to contents, used by PatchOperations
@@ -116,12 +181,12 @@ namespace ModCheck
 
         public static string getCurrentPatchOwner()
         {
-            return Instance.patchOwners[Instance.currentPatch];
+            return Instance.getModule().getOwner;
         }
 
         public static string getCurrentPatchName()
         {
-            return Instance.patchNames[Instance.currentPatch];
+            return Instance.getModule().getName;
         }
 
         public static bool isModLoaded(string name)
@@ -143,6 +208,57 @@ namespace ModCheck
 
         }
 
+        private IEnumerable<PatchMemoryModule> getModulesInOrder()
+        {
+            int patchMax = PatchMemory.Count;
+            int vanillaMax = VanillaMemory.Count;
+            int patchCounter = 0;
+            int vanillaCounter = 0;
+
+            while (patchMax > patchCounter && vanillaMax > vanillaCounter)
+            {
+                if (PatchMemory[patchCounter].getIndex <= VanillaMemory[vanillaCounter].getIndex)
+                {
+                    yield return PatchMemory[patchCounter];
+                    ++patchCounter;
+                }
+                else
+                {
+                    yield return VanillaMemory[vanillaCounter];
+                    ++vanillaCounter;
+                }
+            }
+            for (; patchMax > patchCounter; ++patchCounter)
+            {
+                yield return PatchMemory[patchCounter];
+            }
+            for (; vanillaMax > vanillaCounter; ++vanillaCounter)
+            {
+                yield return VanillaMemory[vanillaCounter];
+            }
+        }
+
+        private IEnumerable<List<PatchMemoryModule>> getModulesInMods()
+        {
+            List<PatchMemoryModule> list = new List<PatchMemoryModule>();
+            int currentMod = -1;
+            foreach (PatchMemoryModule module in getModulesInOrder())
+            {
+                if (module.getIndex != currentMod)
+                {
+                    if (!list.NullOrEmpty())
+                    {
+                        yield return list;
+                    }
+                    list.Clear();
+                    currentMod = module.getIndex;
+                }
+
+                list.Add(module);
+            }
+            yield return list;
+        }
+
 
         // print to log and free memory
         public static void Clear()
@@ -151,59 +267,85 @@ namespace ModCheck
             {
                 return;
             }
-            
+
+
             if (Prefs.LogVerbose)
             {
-                int max = Instance.patchOwners.Count;
-                if (max > 0) // having 0 patches is very unlikely, but it's best to support it anyway
+                long totalTime = 0;
+                List<string> modOutput = new List<string>();
+                foreach (List<PatchMemoryModule> list in instance.getModulesInMods())
                 {
-                    // print profiling results to the log
-
-                    string lastMod = "";
-                    long totalTime = 0;
-                    List<string> modOutput = new List<string>();
-
-                    for (int i = 0; i < max; ++i)
+                    string output = "";
+                    long time = 0;
+                    foreach (PatchMemoryModule module in list)
                     {
-                        if (lastMod != Instance.patchOwners[i])
-                        {
-                            // current patch operation has a different owner than the last one, meaning it's the first operation in a new mod
+                        long timeSpendHere = module.getTime;
+                        time += timeSpendHere;
+                        output += ("\n         " + ((timeSpendHere * 1000f) / Stopwatch.Frequency).ToString("F4").PadLeft(10) + " ms   " + module.getFolderString + module.getName);
+                    }
 
-                            lastMod = Instance.patchOwners[i];
-                            long total = 0;
-                            string patches = "";
-                            // loop though all operations in the mod in question
-                            for (int j = i; j < max; ++j)
-                            {
-                                if (lastMod != Instance.patchOwners[j])
-                                {
-                                    // new owner means no more operations in this mod
-                                    break;
-                                }
-                                long timeSpendHere = Instance.timeSpend[j];
-                                // accumulate total mod time
-                                total += timeSpendHere;
-                                // store the line generated for this operation in a temp string
-                                patches += ("\n         " + ((timeSpendHere * 1000f) / Stopwatch.Frequency).ToString("F4").PadLeft(10) + " ms   " + Instance.patchNames[j]);
-                            }
-                            // all operations for the mod in question have been added
-                            totalTime += total;
-                            // print the mod total
-                            string modLine = ("   " + ((total * 1000f)/ Stopwatch.Frequency).ToString("F4").PadLeft(10) + " ms " + lastMod);
-                            // print the already generated lines for each operation
-                            modOutput.Add(modLine + patches);
-                        }
-                    }
-                    Log.Message("[ModCheck] Total time spent patching: " + ((totalTime* 1000f)/ Stopwatch.Frequency).ToString("F4").PadLeft(10) + " ms\nTime spent on each patch:");
-                    foreach (string loopMod in modOutput)
-                    {
-                        Log.Message(loopMod);
-                    }
+                    totalTime += time;
+                    string modLine = ("   " + ((time * 1000f) / Stopwatch.Frequency).ToString("F4").PadLeft(10) + " ms " + list[0].getOwner);
+
+                    modOutput.Add(modLine + output);
+                }
+                Log.Message("[ModCheck] Total time spent patching: " + ((totalTime * 1000f) / Stopwatch.Frequency).ToString("F4").PadLeft(10) + " ms\nTime spent on each patch:");
+                foreach (string loopMod in modOutput)
+                {
+                    Log.Message(loopMod);
                 }
             }
 
             // clear the memory now that it's no longer needed
             instance = null;
+        }
+
+        public List<PatchOperation> getModCheckPatches()
+        {
+            return patches;
+        }
+
+        public void LoadModCheckPatches()
+        {
+
+            DeepProfiler.Start("Loading all ModCheck patches");
+            this.patches = new List<PatchOperation>();
+            int modIndex = -1;
+            foreach (ModContentPack mod in LoadedModManager.RunningMods)
+            {
+                ++modIndex;
+                List<LoadableXmlAsset> list = DirectXmlLoader.XmlAssetsInModFolder(mod, "ModCheckPatches/").ToList<LoadableXmlAsset>();
+                for (int i = 0; i < list.Count; i++)
+                {
+                    XmlElement documentElement = list[i].xmlDoc.DocumentElement;
+                    if (documentElement.Name != "Patch")
+                    {
+                        Log.Error(string.Format("Unexpected document element in patch XML; got {0}, expected 'Patch'", documentElement.Name), false);
+                    }
+                    else
+                    {
+                        for (int j = 0; j < documentElement.ChildNodes.Count; j++)
+                        {
+                            XmlNode xmlNode = documentElement.ChildNodes[j];
+                            if (xmlNode.NodeType == XmlNodeType.Element)
+                            {
+                                if (xmlNode.Name != "Operation")
+                                {
+                                    Log.Error(string.Format("Unexpected element in patch XML; got {0}, expected 'Operation'", documentElement.ChildNodes[j].Name), false);
+                                }
+                                else
+                                {
+                                    PatchOperation patchOperation = DirectXmlToObject.ObjectFromXml<PatchOperation>(xmlNode, false);
+                                    patchOperation.sourceFile = list[i].FullFilePath;
+                                    this.patches.Add(patchOperation);
+                                    PatchMemory.Add(new PatchMemoryModule(modIndex, mod.Name, patchOperation, true));
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+            DeepProfiler.End();
         }
     }
 }

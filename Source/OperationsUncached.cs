@@ -12,7 +12,6 @@ namespace ModCheck
 
         protected override bool ApplyWorker(XmlDocument xml)
         {
-            return true; // hack until RW 1.0 is fully supported
             if (!modName.NullOrEmpty())
             {
                 if (modName != Memory.getCurrentModName())
