@@ -13,12 +13,8 @@ namespace ModCheck
             // only use Harmony on the newest version of the DLL
             if (VersionChecker.IsNewestVersion())
             {
-                Memory.Instance.LoadModCheckPatches();
                 var harmony = HarmonyInstance.Create("com.rimworld.modcheck");
                 harmony.PatchAll(Assembly.GetExecutingAssembly());
-
-                // setup table of patch ownership
-                Memory.Instance.init();
             }
         }
     }
@@ -39,9 +35,24 @@ namespace ModCheck
     {
         static bool Prefix()
         {
+            DeepProfiler.Start("Applying Patches");
+
+            // setup table of patch ownership
+            if (!Memory.Instance.init())
+            {
+                // failure tells no patches were found
+                // if this is the case, return false to avoid the index crash related to iterting an empty list in ApplyPatches
+                return false;
+            }
+
             // Blank the current mod/file since it's not present for vanilla patching.
-            Memory.Instance.resetModAndFile();
+            Memory.Instance.setModAndFile("", "", true);
             return true;
+        }
+
+        static void Postfix()
+        {
+            DeepProfiler.End();
         }
 
         public static IEnumerable<CodeInstruction> Transpiler(IEnumerable<CodeInstruction> instructions)
@@ -71,7 +82,7 @@ namespace ModCheck
                         {
                             First = false;
                             CodeInstruction instruction = new CodeInstruction(OpCodes.Call);
-                            if (Prefs.LogVerbose)
+                            if (Memory.profilingEnabled)
                             {
                                 // start the timer as well as incrementing the counter
                                 instruction.operand = typeof(ModCheck.Memory).GetMethod(nameof(ModCheck.Memory.startPatchingWithTimer));
@@ -85,7 +96,7 @@ namespace ModCheck
                         }
                         else
                         {
-                            if (Prefs.LogVerbose)
+                            if (Memory.profilingEnabled)
                             {
                                 CodeInstruction instruction = new CodeInstruction(OpCodes.Call);
                                 instruction.operand = typeof(ModCheck.Memory).GetMethod(nameof(ModCheck.Memory.endPatchingWithTimer));
@@ -111,21 +122,30 @@ namespace ModCheck
         public static void AddModCheckPatching(List<LoadableXmlAsset> __result)
         {
 
+            DeepProfiler.Start("Loading ModCheckPatches");
 
+            Memory.Instance.LoadModCheckPatches();
 
-            int iLength = __result.Count;
-            for (int i = 0; i < iLength; ++i)
+            if (Memory.Instance.getModCheckPatches().Count > 0)
             {
-                Memory.Instance.setCurrentModName(__result[i].mod.Name);
-                Memory.setCurrentFileName(__result[i]);
-                Memory.startPatching();
+
+                int iLength = __result.Count;
+                Memory.Instance.resetPatchCount();
+
                 foreach (PatchOperation current2 in Memory.Instance.getModCheckPatches())
                 {
-                    
-                    current2.Apply(__result[i].xmlDoc);
-                    
+                    // always measure time. The cost overhead is less than measuring conditionally.
+                    Memory.startPatchingWithTimer();
+                    for (int i = 0; i < iLength; ++i)
+                    {
+                        Memory.Instance.setModAndFile(__result[i].mod.Name, __result[i].name, false);
+                        current2.Apply(__result[i].xmlDoc);
+                    }
+                    Memory.endPatchingWithTimer();
                 }
+
             }
+            DeepProfiler.End();
         }
     }
 }

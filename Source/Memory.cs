@@ -119,7 +119,7 @@ namespace ModCheck
         }
 
         // setup called from HarmonyStarter
-        public void init()
+        public bool init()
         {
             int counter = 0;
             foreach (ModContentPack mod in LoadedModManager.RunningMods)
@@ -131,6 +131,28 @@ namespace ModCheck
                 }
                 ++counter;
             }
+            return VanillaMemory.Count > 0;
+        }
+
+        public static bool profilingEnabled
+        {
+            get { return Prefs.LogVerbose; }
+        }
+
+        public void setModAndFile(string modName, string fileName, bool resetPatches)
+        {
+            currentModName = modName;
+            currentFileName = fileName;
+            if (resetPatches)
+            {
+                resetPatchCount();
+                workingOnModCheckPatches = false;
+            }
+        }
+
+        public void resetPatchCount()
+        {
+            Instance.currentPatch = -1;
         }
 
         // calls from Harmony injected methods
@@ -246,7 +268,7 @@ namespace ModCheck
             {
                 if (module.getIndex != currentMod)
                 {
-                    if (!list.NullOrEmpty())
+                    if (list.Count > 0)
                     {
                         yield return list;
                     }
@@ -256,7 +278,10 @@ namespace ModCheck
 
                 list.Add(module);
             }
-            yield return list;
+            if (list.Count > 0)
+            {
+                yield return list;
+            }
         }
 
 
@@ -269,7 +294,7 @@ namespace ModCheck
             }
 
 
-            if (Prefs.LogVerbose)
+            if (Memory.profilingEnabled)
             {
                 long totalTime = 0;
                 List<string> modOutput = new List<string>();
