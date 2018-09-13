@@ -3,7 +3,7 @@
 	<name>ModCheck</name>
 	<author>Nightinggale</author>
 	<url>https://ludeon.com/forums/index.php?topic=36534.0</url>
-	<targetVersion>1.0.7</targetVersion>
+	<targetVersion>0.19.7</targetVersion>
 	<description>Adds more patching operations for modders and makes RimWorld start up faster due to faster patching.
 	
 For players:
