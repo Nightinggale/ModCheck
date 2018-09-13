@@ -220,6 +220,7 @@ namespace ModCheck
     }
 
 
+#if false
     [HarmonyPatch(typeof(Verse.LoadedModManager))]
     [HarmonyPatch("LoadModXML")]
     class ModCheckPatching
@@ -254,4 +255,5 @@ namespace ModCheck
             DeepProfiler.End();
         }
     }
+#endif
 }

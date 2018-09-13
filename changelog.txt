@@ -2,6 +2,7 @@ Changelog for ModCheck
 Updating ModCheck will not break existing xml files.
 
 v1.7
+- B19 support
 - Speedboost: cached mod indexes for massive speed boost of some ModCheck internals
 - Rewritten the log writing system to give better control/more features to patch writers
 - Rewritten error messages to make it easier to find the error
@@ -10,12 +11,15 @@ v1.7
 - Added new mode to LoadOrder. It can now use first and last strings instead of the old approach (which still works)
 - Added Sequence operation, which does the same as the vanilla operation, but with ModCheck specific options
 - Added logic operations AND, OR, IfElse, Loop and Once
+- Added Search operation to speed up patching when the same object is patched multiple times in a row
 - Added warning/error if outdated versions of ModCheck are being loaded (risk of new vs old conflicts)
 - Added a preview logo (thanks to larSyn for drawing it)
 - Added support for ModSync RW
 - Fix: profiling now displays correct time if the hardware has a high precision timer
 - Fix: profiling will no longer cut off the output if you have a lot of patches
+
 - Removed the need to include yourMod and modName unless they are actually used
+- Removed FindFile operation (vanilla rewrite renders it both obsolete and impossible to implement)
 
 v1.6
 - Added FindFile to greatly speed up patch files

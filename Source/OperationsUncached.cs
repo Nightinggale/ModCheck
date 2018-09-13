@@ -4,6 +4,8 @@ using Verse;
 namespace ModCheck
 {
 #pragma warning disable CS0649
+
+#if false
     public class FindFile : findFile { }
     public class findFile : ModCheckNameClass
     {
@@ -31,4 +33,5 @@ namespace ModCheck
             return true;
         }
     }
+#endif
 }
