@@ -224,4 +224,60 @@ namespace ModCheck
             return true;
         }
     }
+
+    public class Search : search { }
+    public class search : ModCheckNameClass
+    {
+        protected string xpath;
+        private bool stopOnFail = true;
+        private List<PatchOperation> operations;
+        protected string tag = "SearchResult";
+
+        protected override bool ApplyWorker(XmlDocument xml)
+        {
+            bool result = false;
+            XmlElement tmp = null;
+
+            foreach (object current in xml.SelectNodes(this.xpath))
+            {
+                if (tmp == null)
+                {
+                    tmp = xml.CreateElement(tag);
+                    xml.DocumentElement.AppendChild(tmp);
+                    result = true;
+                }
+                XmlNode xmlNode = current as XmlNode;
+                XmlNode parentNode = xmlNode.ParentNode;
+
+                XmlNode next = xmlNode.NextSibling;
+
+                // move result to a place where only one element exist (no searching)
+                tmp.AppendChild(xmlNode);
+                // call child operations
+                foreach (PatchOperation loopOperation in operations)
+                {
+                    if (!loopOperation.Apply(xml) && stopOnFail)
+                    {
+                        result = false;
+                        break;
+                    }
+                }
+                // restore element layout
+                if (next == null)
+                {
+                    parentNode.AppendChild(xmlNode); // append to the end
+                }
+                else
+                {
+                    parentNode.InsertBefore(xmlNode, next);
+                }
+            }
+            if (result)
+            {
+                xml.DocumentElement.RemoveChild(tmp);
+            }
+            return result;
+        }
+
+    }
 }
