@@ -88,6 +88,8 @@ namespace ModCheck
 
         private List<PatchOperation> patches = new List<PatchOperation>();
 
+        private Dictionary<XmlNode, LoadableXmlAsset> assetlookupMemory;
+
         // Explicit static constructor to tell C# compiler
         // not to mark type as beforefieldinit
         static Memory()
@@ -171,6 +173,16 @@ namespace ModCheck
         {
             Instance.currentFileName = current.name;
             Instance.currentPatch = -1;
+        }
+
+        public void setassetlookup(Dictionary<XmlNode, LoadableXmlAsset> assetlookup)
+        {
+            this.assetlookupMemory = assetlookup;
+        }
+
+        public static Dictionary<XmlNode, LoadableXmlAsset> getXmlAssets()
+        {
+            return Instance.assetlookupMemory;
         }
 
         public static void startPatching()

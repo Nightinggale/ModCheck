@@ -3,6 +3,7 @@ using System.Reflection;
 using System.Collections.Generic;
 using Verse;
 using System.Reflection.Emit;
+using System.Xml;
 
 namespace ModCheck
 {
@@ -33,7 +34,7 @@ namespace ModCheck
     [HarmonyPatch("ApplyPatches")]
     class VanillaPatching
     {
-        static bool Prefix()
+        static bool Prefix(Dictionary<XmlNode, LoadableXmlAsset> assetlookup)
         {
             DeepProfiler.Start("Applying Patches");
 
@@ -47,6 +48,7 @@ namespace ModCheck
 
             // Blank the current mod/file since it's not present for vanilla patching.
             Memory.Instance.setModAndFile("", "", true);
+            Memory.Instance.setassetlookup(assetlookup);
             return true;
         }
 
