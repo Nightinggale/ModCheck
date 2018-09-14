@@ -8,6 +8,7 @@ While the code is significantly better, all Harmony calls from ModCheck had to b
 - Added B19 support
 - Added Search operation to speed up patching when the same object is patched multiple times in a row
 - Added Move operation to control cases where order matters (like order of building buttons)
+- Patch profiling now measures the time more accurately (less rounding errors)
 
 XML BREAKING ALERT!!!
 Removed FindFile operation (vanilla rewrite renders it both obsolete and impossible to implement)
