@@ -1,6 +1,12 @@
 Changelog for ModCheck
 Updating ModCheck will not break existing xml files unless stated otherwise.
 
+v1.8 (RW 1.0)
+Update to about only. The DLL file will not even have to be updated.
+
+- RimWorld 1.0 support
+- Added support for Fluffy's Mod Manager
+
 v1.8
 This is a significant update from a coding point of view. B19 vanilla changed completely regarding patching.
 While the code is significantly better, all Harmony calls from ModCheck had to be redesigned and rewritten.
