@@ -8,6 +8,6 @@
         <li>Core</li>
     </loadBefore>
     <loadAfter/>
-    <manifestUri>https://rawgit.com/Nightinggale/ModCheck/master/About/Manifest.xml</manifestUri>
+    <manifestUri>https://cdn.jsdelivr.net/gh/Nightinggale/ModCheck@master/About/Manifest.xml</manifestUri>
     <downloadUri>https://github.com/Nightinggale/ModCheck/releases/latest</downloadUri>
 </Manifest>
