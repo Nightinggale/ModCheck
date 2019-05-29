@@ -2,7 +2,7 @@ Changelog for ModCheck
 Updating ModCheck will not break existing xml files unless stated otherwise.
 
 v1.8.1
-- Fixed compatilibty issue with updated Rimworld. Profiling works again.
+- Fixed compatibility issue with updated Rimworld. Profiling works again.
 - Updated version URL for Fluffy's Mod Manager
 
 v1.8 (RW 1.0)
