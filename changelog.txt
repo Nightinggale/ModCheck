@@ -1,6 +1,9 @@
 Changelog for ModCheck
 Updating ModCheck will not break existing xml files unless stated otherwise.
 
+v1.8.1
+Fixed compatilibty issue with updated Rimworld. Profiling works again.
+
 v1.8 (RW 1.0)
 Update to about only. The DLL file will not even have to be updated.
 

@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using Verse;
 using System.Reflection.Emit;
 using System.Xml;
+using System.Text;
 
 namespace ModCheck
 {
@@ -167,12 +168,55 @@ namespace ModCheck
                 bFoundCorrectMethod = false;
             }
 
+            // verify that each line is the same
             for (int i = 0; i < iList.Count && bFoundCorrectMethod; ++i)
             {
                 if (iList[i].ToString() != assumedMethod[i])
                 {
+                    // line mismatch. Test that it isn't something silly like f__am$cache0 != f__am$cache2
+                    bool match = false;
+                    int offset = -1;
+
+                    // lines with a known changing number
+                    switch (i)
+                    {
+                        case 1:
+                        case 6:
+                        case 7:
+                            offset = 119;
+                            break;
+                        case 4:
+                            offset = 37;
+                            break;
+                    }
+
+                    if (offset != -1)
+                    {
+                        try
+                        {
+                            // the mismatch could be a number in a generated var name
+                            // replace the char in question with the new one
+                            if (assumedMethod[i].Length > offset && assumedMethod[i].Length == iList[i].ToString().Length)
+                            {
+                                StringBuilder sb = new StringBuilder(assumedMethod[i]);
+                                sb[offset] = iList[i].ToString().ToCharArray()[offset];
+
+                                // make the comparison again, this time ignoring the char, which can modify itself
+                                match = sb.ToString() == iList[i].ToString();
+                            }
+                        }
+                        catch
+                        {
+                            // possibly unneeded try-catch. However it's here just to be safe. We really don't want to kill vanilla xml patching.
+                        }
+                    }
+
+                    if (!match)
+                    {
+                        // still no match. The source is indeed modified.
+                        bFoundCorrectMethod = false;
+                    }
                     
-                    bFoundCorrectMethod = false;
                 }
             }
 
